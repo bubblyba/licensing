@@ -13,25 +13,37 @@ app.config['SQLALCHEMY_TRACK_MODIFICATIONS'] = False
 db = SQLAlchemy(app)
 class users(db.Model):
     user_id = db.Column("user_id", db.Integer, primary_key=True)
-    first_name = db.Column("first_name", db.String(50))
-    last_name = db.Column("last_name", db.String(50))
     username = db.Column("username", db.String(50))
     password = db.Column("password", db.String(50))
     email = db.Column("email", db.String(100))
-    title = db.Column("title", db.String(100))
 
 
-    def __init__(self, user_id,first_name,last_name,username, password, email,title):
-        self.user_id = user_id
 
-        self.first_name = first_name
-        self.last_name = last_name
+
+    def __init__(self,username, password, email):
+
 
         self.username = username
         self.password = password
         self.email = email
-        self.title = title
 
+
+class license(db.Model):
+    id = db.Column("id", db.Integer, primary_key=True)
+    document_name = db.Column("document_name", db.String(50))
+    issued_by = db.Column("issued_by", db.String(50))
+    description = db.Column("description", db.String(50))
+
+    user_id = db.Column("user_id", db.Integer, db.ForeignKey('users.user_id'))
+
+    def __init__(self,id,document_name,issued_by,user_id):
+
+        self.id = id
+
+        self.document_name = document_name
+        self.issued_by = issued_by
+
+        self.user_id = user_id
 
 
 
@@ -41,14 +53,18 @@ def sign_up_form():
     return render_template('signup.html')
 
 
-@app.route('/signup/', methods=['POST'])
+@app.route('/signup/', methods=['POST','GET'])
 def signup():
-    first_name = request.form['first_name']
-    last_name = request.form['last_name']
+    sqliteConnection = sqlite3.connect('users.sqlite3')
+
+    cursor = sqliteConnection.cursor()
+
+
     username = request.form['username']
     password = request.form['password']
     email = request.form['email']
-    title = request.form['title']
+
+
 
     found_user = users.query.filter_by(username=username).first()
     if found_user:
@@ -62,9 +78,19 @@ def signup():
             return render_template('signup.html', error=error)
         else:
 
-            usr = users(first_name,last_name,username, password,email,title)
+            usr = users(username, password,email)
             db.session.add(usr)
             db.session.commit()
+            role_id = 0
+            role_name="viewer"
+            sqliteConnection = sqlite3.connect('users.sqlite3')
+
+            cursor = sqliteConnection.cursor()
+            cursor.execute("SELECT user_id FROM users WHERE username= ?",
+                           (username,))
+            user_id = cursor.fetchone()
+            print(user_id[0])
+
             print("Record inserted successfully into user table ")
             return redirect(url_for('login'))
 
@@ -86,20 +112,40 @@ def login():
 
     username = request.form['username']
     password = request.form['password']
-    session['username'] = username
+
+
+    session['username'] =  username
     cursor.execute("SELECT * FROM users WHERE username= ? and password= ?",
                    (username, password))
+
     found = cursor.fetchone()
     if found:
-        print("good")
-        cursor.execute("UPDATE users SET isAuthenticated = '1' WHERE username = ?",
+        cursor.execute("SELECT user_id FROM users WHERE username= ?",
                        (username,))
+
+        user_id = cursor.fetchone()
+
+
+        print("good")
+
+        print(user_id)
+
         return redirect(url_for('dashboard'), username)
     else:
         print("bad")
         error = "Wrong username or password"
         return render_template('login.html', error=error)
 
+
+@app.route('/dashboard/')
+def dashboard_form():
+    return render_template('dashboard.html')
+
+
+@app.route('/dashboard/', methods=['POST'])
+def dashboard():
+
+        return render_template('dashboard.html')
 
 
 
