@@ -33,16 +33,22 @@ class license(db.Model):
     document_name = db.Column("document_name", db.String(50))
     issued_by = db.Column("issued_by", db.String(50))
     description = db.Column("description", db.String(50))
-
+    valid_from = db.Column("valid_from", db.String(50))
+    valid_to = db.Column("valid_to", db.String(50))
+    renewal_link = db.Column("renewal_link", db.String(50))
+    notify_on = db.Column("notify_on", db.String(50))
     user_id = db.Column("user_id", db.Integer, db.ForeignKey('users.user_id'))
 
-    def __init__(self,id,document_name,issued_by,user_id):
+    def __init__(self,document_name,issued_by,description,valid_from,valid_to,renewal_link,notify_on,user_id):
 
-        self.id = id
 
         self.document_name = document_name
         self.issued_by = issued_by
-
+        self.description = description
+        self.valid_from = valid_from
+        self.valid_to = valid_to
+        self.renewal_link = renewal_link
+        self.notify_on = notify_on
         self.user_id = user_id
 
 
@@ -57,7 +63,6 @@ def sign_up_form():
 def signup():
     sqliteConnection = sqlite3.connect('users.sqlite3')
 
-    cursor = sqliteConnection.cursor()
 
 
     username = request.form['username']
@@ -110,11 +115,13 @@ def login():
 
     cursor = sqliteConnection.cursor()
 
+
     username = request.form['username']
     password = request.form['password']
 
 
     session['username'] =  username
+    print(username)
     cursor.execute("SELECT * FROM users WHERE username= ? and password= ?",
                    (username, password))
 
@@ -128,7 +135,9 @@ def login():
 
         print("good")
 
-        print(user_id)
+        print(user_id[0])
+        session['user_id'] = user_id[0]
+
 
         return redirect(url_for('dashboard'), username)
     else:
@@ -139,15 +148,91 @@ def login():
 
 @app.route('/dashboard/')
 def dashboard_form():
-    return render_template('dashboard.html')
+    username = session.get('username')
+    user_id = session.get('user_id')
+
+    print(username)
+    return render_template('dashboard.html',username=username)
 
 
-@app.route('/dashboard/', methods=['POST'])
+@app.route('/dashboard/', methods=['POST','GET'])
 def dashboard():
+    username = session.get('username')
+    user_id = session.get('user_id')
+    print(user_id)
+    print(username)
+    return redirect(url_for('add_license_form'), username)
 
-        return render_template('dashboard.html')
+
+@app.route('/add_license/')
+def add_license():
+    username = session.get('username')
+    user_id = session.get('user_id')
+
+    print(username)
+    return render_template('add_license.html',username=username)
 
 
+@app.route('/add_license/', methods=['POST'])
+def add_license_form():
+    username = session.get('username')
+    if username is None:
+        error = "User not authenticated"
+        return render_template('error.html', error=error)
+
+    user_id1 = session.get('user_id')
+    if user_id1 is None:
+        error = "User not authenticated"
+        return render_template('error.html', error=error)
+    document_name = request.form['document_name']
+    if document_name == "":
+        error = "Please provide a document name"
+        return render_template('add_license.html', error=error)
+    issued_by = request.form['issued_by']
+    if issued_by == "":
+        error = "Please provide the company that this license is issued by"
+        return render_template('add_license.html', error=error)
+    description = request.form['description']
+    if description == "":
+        error = "Please provide a description"
+        return render_template('add_license.html', error=error)
+    valid_from = request.form['valid_from']
+    if valid_from == "":
+        error = "Please provide the date that you last renewed you license"
+        return render_template('add_license.html', error=error)
+    valid_to = request.form['valid_to']
+    if valid_to == "":
+        error = "Please provide the date that your license expired"
+        return render_template('add_license.html', error=error)
+    renewal_link = request.form['renewal_link']
+    if valid_to == "":
+        error = "Please provide the url that you need to go for renewing your license"
+        return render_template('add_license.html', error=error)
+    notify_on = request.form['notify_on']
+    if valid_to == "":
+        error = "Please provide the day you would like us to notify you"
+        return render_template('add_license.html', error=error)
+    user_id = user_id1
+
+    print(username)
+    print(document_name)
+    print(issued_by)
+    print(description)
+    print(valid_from)
+    print(valid_to)
+    print(renewal_link)
+    print(notify_on)
+    print(user_id)
+
+    sqliteConnection = sqlite3.connect('users.sqlite3')
+
+    cursor = sqliteConnection.cursor()
+
+    licenses = license(document_name,issued_by,description,valid_from,valid_to,renewal_link,notify_on,user_id)
+    db.session.add(licenses)
+    db.session.commit()
+
+    return redirect(url_for('dashboard'), username)
 
 
 if __name__ == '__main__':

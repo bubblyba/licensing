@@ -1,0 +1,55 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <link href="https://fonts.googleapis.com/icon?family=Material+Icons"
+      rel="stylesheet">
+    <meta charset="UTF-8">
+    <meta charset="UTF-8">
+    <title>Title</title>
+</head>
+<link rel="stylesheet" href="https://stackpath.bootstrapcdn.com/bootstrap/4.3.1/css/bootstrap.min.css" integrity="sha384-ggOyR0iXCbMQv3Xipma34MD+dH/1fQ784/j6cY/iJTQUOhcWr7x9JvoRxT2MZw1T" crossorigin="anonymous">
+<link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/4.7.0/css/font-awesome.min.css">
+<body>
+<div><span class="material-icons">
+account_circle
+</span>{{username}}</div>
+<form method="POST">
+  <div class="form-group">
+    <input name="document_name" class="form-control form-control-lg" type="text" placeholder="License Name" id="exampleFormControlInput1">
+
+  </div>
+     <div class="form-group">
+    <input name="issued_by" class="form-control form-control-lg" type="text" placeholder="Issued By" id="exampleFormControlInput2">
+
+  </div>
+
+
+    <div class="form-group">
+    <input name="valid_from" class="form-control form-control-lg" type="text" placeholder="Valid From(XX-XX-XXXX)" id="exampleFormControlInput3">
+
+  </div>
+    <div class="form-group">
+    <input name="valid_to" class="form-control form-control-lg" type="text" placeholder="Valid To(XX-XX-XXXX)" id="exampleFormControlInput4">
+
+  </div>
+
+    <div class="form-group">
+    <input name="renewal_link" class="form-control form-control-lg" type="text" placeholder="Copy And Paste Renewal URL" id="exampleFormControlInput5">
+
+  </div>
+    </div>
+    <div class="form-group">
+    <input name="notify_on" class="form-control form-control-lg" type="text" placeholder="Date we should notify you (XX-XX-XXXX)" id="exampleFormControlInput6">
+
+  </div>
+    </div>
+    <div class="form-group">
+    <input name="description" class="form-control input-lg" placeholder="Description" id="inputlg" type="text">
+  </div>
+      <button class="btn btn-primary" name="submit"type="submit">Save</button>
+
+</form>
+{{error}}
+
+</body>
+</html>
