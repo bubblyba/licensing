@@ -10,12 +10,45 @@
 <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/4.7.0/css/font-awesome.min.css">
 
 <body>
-<div><span class="material-icons">
+<div class="prof" style="margin-left: 1320px;">
+<div>
+    <span class="material-icons">
 account_circle
-</span>{{username}}</div>
+    </span><span>{{username}}</span></div>
 <div>{{ user_id }}</div>
+    </div>
+
+<h3 style="margin-left: 650px;">Licenses</h3>
+<table style="margin-left:350px;"border="2">
+
+    <tbody>
+
+<tr>
+      <td>License Name</td>
+      <td>Issued By</td>
+      <td>Description</td>
+      <td>Valid From</td>
+      <td>Valid To</td>
+      <td>Renewal Link</td>
+      <td>Notify On</td>
+</tr>
+{%for i in range(0, length)%}
+<tr>
+      <td>{{found[i][1]}}</td>
+      <td>{{found[i][2]}}</td>
+      <td>{{found[i][3]}}</td>
+      <td>{{found[i][4]}}</td>
+      <td>{{found[i][5]}}</td>
+      <td><a href="{{found[i][6]}}">{{found[i][6]}}</a></td>
+      <td>{{found[i][7]}}</td>
+
+
+
+</tr>
+</tbody>
+</table>
 <form method="POST">
-<div style="margin-top: 50px;" class="input-group mb-4">
+<div style="margin-left: 1025px; margin top: 20px" class="input-group mb-4">
 <div class="input-group-prepend">
 </div>
 
@@ -26,6 +59,13 @@ account_circle
 
 
 
+
 </form>
+
+
+{%endfor%}
+
+
+
 </body>
 </html>

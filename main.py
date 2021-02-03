@@ -148,11 +148,29 @@ def login():
 
 @app.route('/dashboard/')
 def dashboard_form():
-    username = session.get('username')
-    user_id = session.get('user_id')
 
+    username = session.get('username')
+    if username is None:
+        error = "User not authenticated"
+        return render_template('error.html', error=error)
+    user_id = session.get('user_id')
+    if user_id is None:
+        error = "User not authenticated"
+        return render_template('error.html', error=error)
+    sqliteConnection = sqlite3.connect('users.sqlite3')
+
+    cursor = sqliteConnection.cursor()
+    cursor.execute("SELECT * FROM license WHERE user_id= ?",
+                   (user_id,))
+
+    found = cursor.fetchall()
+
+
+
+
+    length = len(found)
     print(username)
-    return render_template('dashboard.html',username=username)
+    return render_template('dashboard.html',username=username, found=found,length=length)
 
 
 @app.route('/dashboard/', methods=['POST','GET'])
@@ -214,15 +232,7 @@ def add_license_form():
         return render_template('add_license.html', error=error)
     user_id = user_id1
 
-    print(username)
-    print(document_name)
-    print(issued_by)
-    print(description)
-    print(valid_from)
-    print(valid_to)
-    print(renewal_link)
-    print(notify_on)
-    print(user_id)
+
 
     sqliteConnection = sqlite3.connect('users.sqlite3')
 
