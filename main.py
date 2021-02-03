@@ -138,8 +138,7 @@ def login():
         print(user_id[0])
         session['user_id'] = user_id[0]
 
-
-        return redirect(url_for('dashboard'), username)
+        return redirect(url_for('dashboard'),302)
     else:
         print("bad")
         error = "Wrong username or password"
@@ -179,7 +178,7 @@ def dashboard():
     user_id = session.get('user_id')
     print(user_id)
     print(username)
-    return redirect(url_for('add_license_form'), username)
+    return redirect(url_for('add_license_form'), 302)
 
 
 @app.route('/add_license/')
@@ -242,7 +241,7 @@ def add_license_form():
     db.session.add(licenses)
     db.session.commit()
 
-    return redirect(url_for('dashboard'), username)
+    return redirect(url_for('dashboard'), 302)
 
 
 if __name__ == '__main__':
