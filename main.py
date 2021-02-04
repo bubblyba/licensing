@@ -52,6 +52,15 @@ class license(db.Model):
         self.user_id = user_id
 
 
+@app.route('/', methods=['POST','GET'])
+def home():
+    if request.method == "GET":
+        return render_template("home.html")
+    if request.method == "POST":
+	    if request.form.get("submit_a"):
+		    return redirect(url_for('login'))
+	    elif request.form.get("submit_b"):
+		    return redirect(url_for('signup'))
 
 
 @app.route('/signup/')
